@@ -4,6 +4,7 @@ from Bio import PDB     # do obliczania kątów phi i psi
 import matplotlib.pyplot as plt  # do rysowania Ramachandran Plot
 from Bio.PDB import Polypeptide # stąd  informacje o kątach torsyjnych (z obiektu Polypeptide)
 from Bio.PDB.DSSP import DSSP  # do uzyskania informacji o strukturze wtórnej.
+import os
 
 def calculate_phi_psi(structure):
     # Inicjalizacja list do przechowywania kątów phi, psi i struktury wtórnej
@@ -28,7 +29,7 @@ def calculate_phi_psi(structure):
 
     return phi_angles, psi_angles, secondary_structure  # Zwrócenie list kątów phi, psi i struktury wtórnej
 
-def plot_ramachandran(phi_angles, psi_angles, secondary_structure):
+def plot_ramachandran(phi_angles, psi_angles, secondary_structure, pdb_filename):
     plt.figure(figsize=(8, 6))  # Utworzenie nowego obiektu figury o rozmiarze 8x6 cali
     
     # Mapowanie typów struktury wtórnej na kolory
@@ -51,7 +52,7 @@ def plot_ramachandran(phi_angles, psi_angles, secondary_structure):
     legend_labels = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color, markersize=10, label=label) #Jest to lista obiektów Line2D, reprezentujących punkty w legendzie.
                      for label, color in color_map.items()]
     plt.legend(handles=legend_labels, title='Secondary Structure', loc='upper right') #Tworzy legendę na podstawie utworzonych wcześniej obiektów Line2D.
-    plt.savefig('ramachandran_plot.pdf')  #zapisanie
+    plt.savefig(pdb_filename+'_ramachandran_plot.pdf')  #zapisanie
     plt.show()                            #wyświetlenie
 
 if __name__ == "__main__":
@@ -76,4 +77,6 @@ if __name__ == "__main__":
 
     #secondary_structure: Lista zawierająca informacje o strukturze wtórnej dla poszczególnych reszt aminokwasowych w formie oznaczeń typów struktury wtórnej (np. helisa, arkusz beta, zgięcie itp.).
 
-    plot_ramachandran(phi_angles, psi_angles, secondary_structure)
+
+    filename, file_extension = os.path.splitext(os.path.basename(pdb_filename))
+    plot_ramachandran(phi_angles, psi_angles, secondary_structure, os.path.basename(filename+"_"+file_extension[1:]))
